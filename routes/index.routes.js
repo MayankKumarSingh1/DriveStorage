@@ -25,15 +25,14 @@ router.get('/home',authMiddleware,async (req,res)=>{
 
 router.post('/upload', authMiddleware, upload.single('file'), async (req, res) => {
   try {
-    const cloudinaryResponse = await cloudinary.uploader.upload(req.file.path);
-
     await fileModel.create({
       path: cloudinaryResponse.secure_url,
       originalname: req.file.originalname,
       user: req.user.userId,
     });
+    console.log('Uploaded File:', req.file);
 
-    // ✅ Redirect to home after successful upload
+
     res.redirect('/home');
   } catch (err) {
     console.log(err);
