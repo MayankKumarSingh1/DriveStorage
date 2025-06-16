@@ -25,9 +25,13 @@ router.get('/home',authMiddleware,async (req,res)=>{
 
 router.post('/upload', authMiddleware, upload.single('file'), async (req, res) => {
   try {
-   console.log('Multer + Cloudinary file:', JSON.stringify(req.file, null, 2));
+    if (!req.file) {
+      throw new Error("No file received. Multer or Cloudinary failed.");
+    }
 
-    const secureUrl = req.file?.path || req.file?.secure_url || req.file?.url;
+    console.log('Uploaded File:', JSON.stringify(req.file, null, 2));
+
+    const secureUrl = req.file.path || req.file.secure_url || req.file.url;
 
     if (!secureUrl) {
       throw new Error("File not uploaded correctly to Cloudinary");
@@ -41,11 +45,11 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
 
     res.redirect('/home');
   } catch (err) {
-   console.error('Upload error:', JSON.stringify(err, null, 2));
-
-    res.status(500).json({ error: 'Upload Failed' });
+    console.error('Upload Error:', JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
+    res.status(500).json({ error: 'Upload Failed', message: err.message });
   }
 });
+
 
 
 router.get('/download/:id', authMiddleware, async (req, res) => {
