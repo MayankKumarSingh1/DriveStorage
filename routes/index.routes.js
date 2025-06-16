@@ -25,7 +25,7 @@ router.get('/home',authMiddleware,async (req,res)=>{
 
 router.post('/upload', authMiddleware, upload.single('file'), async (req, res) => {
   try {
-    console.log('Uploaded File:', req.file);
+   console.log('Multer + Cloudinary file:', JSON.stringify(req.file, null, 2));
 
     const secureUrl = req.file?.path || req.file?.secure_url || req.file?.url;
 
@@ -41,7 +41,8 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
 
     res.redirect('/home');
   } catch (err) {
-    console.log(err);
+   console.error('Upload error:', JSON.stringify(err, null, 2));
+
     res.status(500).json({ error: 'Upload Failed' });
   }
 });
