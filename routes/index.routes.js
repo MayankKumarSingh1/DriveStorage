@@ -35,7 +35,7 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
 
     await fileModel.create({
       path: cloudinaryResponse.secure_url,
-      originalname: req.file.originalname,
+      originalname: req.file.originalname?.toString(),
       user: req.user.userId,
     });
     console.log('Uploaded File:', req.file);

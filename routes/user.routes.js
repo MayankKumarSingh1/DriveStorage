@@ -47,7 +47,6 @@ router.post(
         username,
         password: hashPassword,
       });
-
       // Auto-login after register
       const token = jwt.sign(
         {
@@ -57,6 +56,13 @@ router.post(
         },
         process.env.JWT_SECRET
       );
+      if (!process.env.JWT_SECRET) {
+  console.error('❌ JWT_SECRET not defined');
+  return res.status(500).render('register', {
+    error: 'Internal error. JWT secret not set.',
+  });
+}
+
 
       res.cookie('token', token);
       res.redirect('/home');
