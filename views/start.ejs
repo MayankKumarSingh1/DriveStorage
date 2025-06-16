@@ -1,50 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Drive App</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DriveApp - Your Cloud, Your Way</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      background-color: #f9f9f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f3f4f6;
+      color: #333;
     }
 
     header {
-      background: #1a73e8;
+      background-color: #1a73e8;
       color: white;
-      padding: 15px 30px;
+      padding: 16px 32px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
-    header .logo {
-      font-size: 24px;
+    .logo {
+      font-size: 22px;
       font-weight: bold;
     }
 
     nav a {
-      color: white;
       margin-left: 20px;
+      color: white;
       text-decoration: none;
-      font-weight: bold;
+      font-weight: 500;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
     }
 
     .hero {
       text-align: center;
-      padding: 80px 20px;
-      background: #e8f0fe;
+      padding: 80px 20px 60px;
+      background-color: #e8f0fe;
     }
 
     .hero h1 {
-      font-size: 48px;
-      margin-bottom: 20px;
+      font-size: 42px;
+      margin-bottom: 15px;
+      color: #1a237e;
     }
 
     .hero p {
-      font-size: 20px;
-      color: #333;
+      font-size: 18px;
+      color: #444;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
     .cta {
@@ -52,32 +62,45 @@
     }
 
     .btn, .btn-outline {
-      padding: 12px 24px;
-      margin: 10px;
-      text-decoration: none;
-      border-radius: 5px;
+      padding: 12px 22px;
       font-size: 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      margin: 8px;
+      display: inline-block;
+      transition: 0.3s;
     }
 
     .btn {
-      background: #1a73e8;
+      background-color: #1a73e8;
       color: white;
+      border: none;
+    }
+
+    .btn:hover {
+      background-color: #1662c4;
     }
 
     .btn-outline {
+      background-color: transparent;
       border: 2px solid #1a73e8;
       color: #1a73e8;
-      background: transparent;
+    }
+
+    .btn-outline:hover {
+      background-color: #dce7ff;
     }
 
     .features {
-      padding: 50px 20px;
-      text-align: center;
+      padding: 60px 20px;
+      background-color: #fff;
     }
 
     .features h2 {
-      font-size: 32px;
-      margin-bottom: 30px;
+      text-align: center;
+      font-size: 30px;
+      margin-bottom: 40px;
+      color: #1a237e;
     }
 
     .feature-grid {
@@ -85,30 +108,51 @@
       justify-content: center;
       gap: 30px;
       flex-wrap: wrap;
+      padding: 0 20px;
     }
 
-    .feature-grid div {
-      background: white;
-      padding: 20px;
-      width: 250px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    .feature-box {
+      background-color: #f9fbff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      padding: 24px;
+      width: 260px;
+      text-align: left;
+    }
+
+    .feature-box h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .feature-box p {
+      font-size: 15px;
+      color: #555;
     }
 
     footer {
-      background: #222;
-      color: #ccc;
+      background-color: #111;
+      color: #bbb;
       text-align: center;
-      padding: 15px;
-      margin-top: 50px;
+      padding: 20px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      .feature-box {
+        width: 90%;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
   <header>
-    <div class="logo">DriveApp </div>
+    <div class="logo">📁 DriveApp</div>
     <nav>
       <a href="/">Home</a>
       <a href="/user/register">Register</a>
@@ -116,34 +160,32 @@
     </nav>
   </header>
 
-  <!-- Hero Section -->
   <section class="hero">
-    <h1>Welcome to DriveApp</h1>
-    <p>Your secure file storage and sharing platform in the cloud.</p>
+    <h1>Store. Access. Share.</h1>
+    <p>Welcome to DriveApp – your personal cloud for safely storing and sharing files from any device, anytime.</p>
     <div class="cta">
-      <a href="/user/register" class="btn">Get Started</a>
-      <a href="/user/login" class="btn-outline">Login</a>
+      <a href="/user/register" class="btn">Create Account</a>
+      <a href="/user/login" class="btn-outline">Sign In</a>
     </div>
   </section>
 
-  <!-- Features Section -->
   <section class="features">
-    <h2>Why DriveApp?</h2>
+    <h2>What makes DriveApp awesome?</h2>
     <div class="feature-grid">
-      <div>
-        <h3>📁 Easy File Storage</h3>
-        <p>Upload and manage your files from anywhere.</p>
+      <div class="feature-box">
+        <h3>📤 Easy Upload</h3>
+        <p>Drag and drop your files or upload them in seconds with a clean, simple interface.</p>
       </div>
-      <div>
-        <h3>🔒 Secure & Private</h3>
-        <p>End-to-end encryption to keep your data safe.</p>
+      <div class="feature-box">
+        <h3>🔐 Fully Encrypted</h3>
+        <p>Your files are stored securely using end-to-end encryption. Only you can access them.</p>
+      </div>
+      <div class="feature-box">
+        <h3>🔗 Instant Sharing</h3>
+        <p>Need to send a file? Share a secure link instantly without hassle or downloads.</p>
       </div>
     </div>
   </section>
-
-  <footer>
-    
-  </footer>
 
 </body>
 </html>

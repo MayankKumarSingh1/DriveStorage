@@ -26,35 +26,28 @@ router.post(
           error: 'Invalid registration data',
         });
       }
-
       const { email, username, password } = req.body;
-
-      const existingUser = await userModel.findOne({
-        $or: [{ email }, { username }],
-      });
-
-      if (existingUser) {
-        return res.status(400).render('register', {
-          error: 'Email or username already exists',
-        });
-      }
-
+        let existingUser;
+            try {
+            existingUser = await userModel.findOne({ $or: [{ email }, { username }] });
+            } catch (err) {
+            console.error('Error in DB findOne:', err.message);
+            return res.status(500).render('register', {
+                error: 'Server error. Please try again later.',
+            });
+            }
       const hashPassword = await bcrypt.hash(password, 10);
-
       const newUser = await userModel.create({
         email,
         username,
         password: hashPassword,
       });
-      
         if (!process.env.JWT_SECRET){
         console.error('❌ JWT_SECRET not defined');
         return res.status(500).render('register', {
             error: 'Internal error. JWT secret not set.',
         });
         }
-
-
       const token = jwt.sign(
         {
           userId: newUser._id,
@@ -63,9 +56,9 @@ router.post(
         },
         process.env.JWT_SECRET
       );
-      
       res.cookie('token', token);
       res.redirect('/home');
+
     } catch (err) {
       console.error('Register Error:', err.message);
       res.status(500).render('register', {
