@@ -25,6 +25,14 @@ router.get('/home',authMiddleware,async (req,res)=>{
 
 router.post('/upload', authMiddleware, upload.single('file'), async (req, res) => {
   try {
+    console.log('Uploaded File:', req.file);
+
+    const secureUrl = req.file?.path || req.file?.secure_url || req.file?.url;
+
+    if (!secureUrl) {
+      throw new Error("File not uploaded correctly to Cloudinary");
+    }
+
     await fileModel.create({
       path: cloudinaryResponse.secure_url,
       originalname: req.file.originalname,
