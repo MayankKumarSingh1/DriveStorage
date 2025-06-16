@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Drive App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f9f9f9;
+    }
+
+    header {
+      background: #1a73e8;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    nav a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 80px 20px;
+      background: #e8f0fe;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 20px;
+      color: #333;
+    }
+
+    .cta {
+      margin-top: 30px;
+    }
+
+    .btn, .btn-outline {
+      padding: 12px 24px;
+      margin: 10px;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .btn {
+      background: #1a73e8;
+      color: white;
+    }
+
+    .btn-outline {
+      border: 2px solid #1a73e8;
+      color: #1a73e8;
+      background: transparent;
+    }
+
+    .features {
+      padding: 50px 20px;
+      text-align: center;
+    }
+
+    .features h2 {
+      font-size: 32px;
+      margin-bottom: 30px;
+    }
+
+    .feature-grid {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .feature-grid div {
+      background: white;
+      padding: 20px;
+      width: 250px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    footer {
+      background: #222;
+      color: #ccc;
+      text-align: center;
+      padding: 15px;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">DriveApp 🚗</div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/user/register">Register</a>
+      <a href="/user/login">Login</a>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>Welcome to DriveApp</h1>
+    <p>Your secure file storage and sharing platform in the cloud.</p>
+    <div class="cta">
+      <a href="/user/register" class="btn">Get Started</a>
+      <a href="/user/login" class="btn-outline">Login</a>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <h2>Why DriveApp?</h2>
+    <div class="feature-grid">
+      <div>
+        <h3>📁 Easy File Storage</h3>
+        <p>Upload and manage your files from anywhere.</p>
+      </div>
+      <div>
+        <h3>🔒 Secure & Private</h3>
+        <p>End-to-end encryption to keep your data safe.</p>
+      </div>
+      <div>
+        <h3>🤝 Share with Control</h3>
+        <p>Set permissions and share your files with ease.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 DriveApp. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
