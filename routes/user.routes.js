@@ -29,7 +29,6 @@ router.post(
 
       const { email, username, password } = req.body;
 
-      // Check if email or username already exists
       const existingUser = await userModel.findOne({
         $or: [{ email }, { username }],
       });
@@ -47,7 +46,15 @@ router.post(
         username,
         password: hashPassword,
       });
-      // Auto-login after register
+      
+        if (!process.env.JWT_SECRET){
+        console.error('❌ JWT_SECRET not defined');
+        return res.status(500).render('register', {
+            error: 'Internal error. JWT secret not set.',
+        });
+        }
+
+
       const token = jwt.sign(
         {
           userId: newUser._id,
@@ -56,14 +63,7 @@ router.post(
         },
         process.env.JWT_SECRET
       );
-      if (!process.env.JWT_SECRET) {
-
-        
-  console.error('❌ JWT_SECRET not defined');
-  return res.status(500).render('register', {
-    error: 'Internal error. JWT secret not set.',
-  });
-}
+      
       res.cookie('token', token);
       res.redirect('/home');
     } catch (err) {
