@@ -34,10 +34,10 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
     // Cloudinary upload using buffer
     const streamUpload = (req) => {
       return new Promise((resolve, reject) => {
+
         const stream = cloudinary.uploader.upload_stream(
           {
             folder: 'DriveAppFiles',
-            use_filename: true,
             filename_override: req.file.originalname,
           },
           (error, result) => {
