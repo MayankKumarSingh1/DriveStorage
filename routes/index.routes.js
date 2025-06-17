@@ -7,18 +7,9 @@ const cloudinary = require('../config/cloudinary.config');
 const streamifier = require('streamifier')
 const crypto = require('crypto');
 
-const generateSignature = (params, apiSecret) => {
-  const sortedParams = Object.keys(params)
-    .sort()
-    .map(key => `${key}=${params[key]}`)
-    .join('&');
-
-  const signature = crypto
-    .createHash('sha1')
-    .update(sortedParams + apiSecret)
-    .digest('hex');
-
-  return signature;
+const generateSignature = (params, secret) => {
+  const sorted = Object.keys(params).sort().map(k => `${k}=${params[k]}`).join('&');
+  return crypto.createHash('sha1').update(sorted + secret).digest('hex');
 };
 
 router.get('/', (req, res) => {
@@ -38,56 +29,45 @@ router.get('/home', authMiddleware, async (req, res) => {
 
 router.post('/upload', authMiddleware, upload.single('file'), async (req, res) => {
   try {
-    if (!req.file) throw new Error("No file received");
+    if (!req.file) throw new Error("No file uploaded");
 
     const timestamp = Math.floor(Date.now() / 1000);
-
-    const uploadOptions = {
+    const paramsToSign = {
       folder: 'DriveAppFiles',
       timestamp,
     };
 
-    const signature = generateSignature(uploadOptions, process.env.CLOUDINARY_API_SECRET);
+    const signature = generateSignature(paramsToSign, process.env.CLOUDINARY_API_SECRET);
 
-    const cloudinaryStreamUpload = () => {
-      return new Promise((resolve, reject) => {
-        cloudinary.uploader.upload_stream(
-          {
-            folder: uploadOptions.folder,
-            timestamp: uploadOptions.timestamp,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            signature,
-          },
-          (error, result) => {
-            if (result) resolve(result);
-            else reject(error);
-          }
-        ).end(req.file.buffer);
-      });
-    };
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: 'DriveAppFiles',
+          timestamp,
+          api_key: process.env.CLOUDINARY_API_KEY,
+          signature
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
 
-    const uploadResponse = await cloudinaryStreamUpload();
+      streamifier.createReadStream(req.file.buffer).pipe(stream);
+    });
 
-    const savedFile = await fileModel.create({
-      path: uploadResponse.secure_url,
+    await fileModel.create({
+      path: result.secure_url,
       originalname: req.file.originalname,
-      public_id: uploadResponse.public_id,
+      public_id: result.public_id,
       user: req.user.userId
     });
 
     res.redirect('/home');
 
   } catch (err) {
-    console.error("❌ Upload error:", {
-      message: err.message,
-      stack: err.stack,
-      name: err.name,
-    });
-
-    res.status(500).json({
-      error: "Upload Failed",
-      details: err.message
-    });
+    console.error("❌ Upload error:", err);
+    res.status(500).json({ error: "Upload Failed", details: err.message });
   }
 });
 // Download
