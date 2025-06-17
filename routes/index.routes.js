@@ -4,115 +4,72 @@ const router = express.Router();
 const upload = require('../config/multer.config');
 const fileModel = require('../models/files.models');
 const cloudinary = require('../config/cloudinary.config');
-const fs = require('fs'); // At the top
+const fs = require('fs');
 
-
-// Landing page
-router.get('/', async (req, res) => {
+// Show start page
+router.get('/', (req, res) => {
   res.render('start');
 });
 
-// Home page - show user's files
+// Show files on home page
 router.get('/home', authMiddleware, async (req, res) => {
   try {
     const userFiles = await fileModel.find({ user: req.user.userId });
-    console.log(" 1 User Files:", JSON.stringify(userFiles, null, 2));
     res.render('home', { files: userFiles });
   } catch (err) {
-    console.error(" 2 Error fetching user files:", err.message);
-    // Send JSON instead
-    res.status(500).json({ error: ' 3 Upload Failed', message: err.message });
-
+    console.error("Error:", err);
+    res.status(500).send("Internal Server Error");
   }
 });
 
-// File upload route
+// Upload file
 router.post('/upload', authMiddleware, upload.single('file'), async (req, res) => {
   try {
-    console.log("📥 Upload route triggered");
+    if (!req.file) throw new Error("No file received");
 
-    if (!req.file) {
-      throw new Error("No file received");
-    }
-
-    // Upload to Cloudinary
-    const cloudinaryResponse = await cloudinary.uploader.upload(req.file.path, {
+    const result = await cloudinary.uploader.upload(req.file.path, {
       folder: 'DriveAppFiles',
-      use_filename: true,
+      use_filename: true
     });
 
-    console.log("☁️ Cloudinary Upload Response:", cloudinaryResponse);
-
-    // Get secure_url safely from response
-    const fileUrl = cloudinaryResponse.secure_url;
-    const publicId = cloudinaryResponse.public_id;
-
-    if (!fileUrl) {
-      throw new Error("Cloudinary upload did not return a secure_url");
-    }
-
-    // Save to MongoDB
-    const savedFile = await fileModel.create({
-      path: fileUrl,
+    await fileModel.create({
+      path: result.secure_url,
       originalname: req.file.originalname,
-      public_id: publicId, // Optional but useful for deletion
+      public_id: result.public_id,
       user: req.user.userId
     });
 
-    console.log("✅ File saved to DB:", savedFile);
-
-    // Clean up the uploaded local file
-    fs.unlink(req.file.path, (err) => {
-      if (err) {
-        console.error("⚠️ Failed to delete local temp file:", err.message);
-      }
-    });
-
+    fs.unlinkSync(req.file.path);
     res.redirect('/home');
-
   } catch (err) {
-    const detailedError = {
-      message: err.message,
-      stack: err.stack,
-      name: err.name,
-    };
-
-    console.error("❌ Upload error:", detailedError);
-
-    res.status(500).json({
-      error: "Upload Failed",
-      details: detailedError
-    });
+    console.error("Upload Error:", err);
+    res.status(500).send("Upload Failed");
   }
 });
 
-
-
-
-// Download file route
+// Download
 router.get('/download/:id', authMiddleware, async (req, res) => {
   try {
     const file = await fileModel.findById(req.params.id);
-    if (!file) {
-        return res.status(404).json({ message: "File not found" });
-}
+    if (!file) return res.status(404).send("File not found");
 
     const downloadUrl = file.path.replace('/upload/', '/upload/fl_attachment:');
     res.redirect(downloadUrl);
   } catch (err) {
-    console.error("Download Error:", err.message);
+    console.error("Download Error:", err);
+    res.status(500).send("Download Failed");
   }
 });
 
-// Delete file route
+// Delete
 router.delete('/delete/:id', authMiddleware, async (req, res) => {
   try {
     const file = await fileModel.findByIdAndDelete(req.params.id);
     if (!file) return res.status(404).send("File not found");
-    res.status(200).send("File deleted");
+    res.status(200).send("Deleted");
   } catch (err) {
-    console.error("Delete Error:", err.message);
-    res.status(500).send("Server error");
+    console.error("Delete Error:", err);
+    res.status(500).send("Delete Failed");
   }
 });
 
