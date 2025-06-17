@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,85 +6,64 @@
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
-    <title>Upload Portal</title>
-    <style>
-      .fade-in {
-        animation: fadeIn 0.3s ease-in-out;
-      }
-      @keyframes fadeIn {
-        from { opacity: 0; transform: scale(0.95); }
-        to { opacity: 1; transform: scale(1); }
-      }
-    </style>
+    <title>File Upload</title>
   </head>
 
-  <body class="min-h-screen bg-radial-[ellipse_at_top_left] from-indigo-950 via-purple-900 to-blue-950 text-white font-sans transition-all duration-300">
-
-    <main class="min-h-screen flex flex-col items-center gap-10 py-10 px-4">
-
-      <!-- Title -->
-      <h1 class="text-3xl md:text-4xl font-bold text-center bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
-        File Upload Dashboard
-      </h1>
-
-      <!-- Upload Trigger Button -->
-      <button onclick="showPopUp()" class="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-full shadow-lg hover:scale-105 transition duration-300">
-        <i class="ri-upload-cloud-line text-lg"></i> Upload New File
+  <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white transition-all duration-300 font-sans">
+    <main class="p-6 min-h-screen flex flex-col items-center gap-6">
+      <!-- Upload Button -->
+      <button onclick="showPopUp()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2 rounded-xl shadow-md transition cursor-pointer">
+        <i class="ri-upload-cloud-line text-xl cursor-pointer"></i> Upload File
       </button>
 
       <!-- Upload Modal -->
-      <div class="pop hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="relative bg-white/80 dark:bg-gray-900/90 backdrop-blur-lg border border-gray-200 dark:border-gray-700 w-full max-w-md p-6 rounded-xl shadow-2xl fade-in">
-
+      <div class="pop hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div class="relative bg-white dark:bg-gray-800 w-full max-w-md p-6 rounded-xl shadow-lg animate-fade-in">
           <!-- Close Button -->
-          <button onclick="hidePopUp()" class="absolute top-3 right-4 text-gray-500 hover:text-red-500 text-xl transition">
-            <i class="ri-close-fill"></i>
+          <button onclick="hidePopUp()" class="absolute top-4 right-4 text-gray-500 dark:text-gray-300 hover:text-red-500 text-2xl">
+            <i class="ri-close-line"></i>
           </button>
 
-          <h3 class="text-xl font-semibold text-center mb-4 text-gray-900 dark:text-white">Upload File</h3>
-
-          
-
           <!-- Upload Form -->
-          <form action="/upload" method="post" enctype="multipart/form-data" class="space-y-5">
-            <div class="w-full h-48 rounded-lg border-2 border-dashed border-purple-300 dark:border-gray-600 bg-purple-50 dark:bg-gray-800 flex flex-col items-center justify-center text-center transition hover:bg-purple-100 dark:hover:bg-gray-700">
-              <svg class="w-10 h-10 mb-2 text-purple-400 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-              </svg>
-              <p class="text-sm text-gray-600 dark:text-gray-300">Drag & drop or click below</p>
-              <p class="text-xs mb-2 text-gray-400">PNG, JPG, GIF, SVG | Max 800x400px</p>
-              <button type="button" onclick="document.getElementById('dropzone-file').click()" class="text-sm px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white rounded-full transition">
-                Browse
-              </button>
-              <input id="dropzone-file" name="file" type="file" class="hidden" required />
-            </div>
+       <form action="/upload" method="post" enctype="multipart/form-data" class="space-y-4">
+      <div class="flex flex-col items-center justify-center w-full h-60 border-2 border-dashed border-gray-400 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition relative">
+        <div class="flex flex-col items-center justify-center p-6 text-gray-500 dark:text-gray-300 text-center">
+          <svg class="w-10 h-10 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12V4m0 0L8 8m4-4l4 4" />
+          </svg>
+          <p class="text-sm font-medium">Drag & drop file here or click browse</p>
+          <p class="text-xs mb-4">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+          <!-- Browse Button -->
+          <button type="button" onclick="document.getElementById('dropzone-file').click()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1 rounded-md text-sm font-medium shadow-sm transition cursor-pointer">
+            Browse
+          </button>
+        </div>
+        <input id="dropzone-file" name="file" type="file" class="hidden" required />
+      </div>
 
-            <div class="text-center">
-              <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-5 py-2 rounded-full shadow transition">
-                Upload
-              </button>
-            </div>
-          </form>
+      <div class="text-right">
+        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-semibold shadow-sm transition cursor-pointer">
+          Upload File
+        </button>
+      </div>
+</form>
+
         </div>
       </div>
 
-      <!-- File Cards -->
-      <section class="w-full max-w-5xl">
-        <h2 class="text-2xl font-semibold text-center text-gray-700 dark:text-white mb-6">Your Files</h2>
+      <!-- Uploaded Files -->
+      <div class="files w-full max-w-xl mt-4 space-y-3">
+        <h2 class="text-xl font-semibold text-center text-gray-800 dark:text-white">My Files</h2>
 
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          <% files.forEach((file) => { %>
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md hover:scale-[1.01] transition p-4 flex justify-between items-center border border-gray-200 dark:border-gray-700">
-              <div class="truncate font-medium text-sm text-gray-700 dark:text-white w-4/5">
-                <%= file.originalname %>
-              </div>
-              <a href="/download/<%= file._id %>" class="text-blue-500 dark:text-blue-300 hover:text-blue-700 text-xl transition">
-                <i class="ri-download-2-line"></i>
-              </a>
-            </div>
-          <% }) %>
-        </div>
-      </section>
+        <% files.forEach((file) => { %>
+          <div class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-lg flex justify-between items-center hover:bg-gray-300 dark:hover:bg-gray-600 transition cursor-pointer shadow-sm">
+            <span class="truncate font-medium text-gray-800 dark:text-white"><%= file.originalname %></span>
+            <a href="/download/<%= file._id %>" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 text-xl">
+              <i class="ri-download-line"></i>
+            </a>
+          </div>
+        <% }) %>
+      </div>
     </main>
 
     <script>
@@ -95,20 +74,18 @@
       function hidePopUp() {
         document.querySelector('.pop').style.display = 'none';
       }
+      
+       document.addEventListener("DOMContentLoaded", function () {
+    const popup = document.querySelector('.pop');
+    const modalBox = popup.querySelector('div'); // The container of the modal content
 
-      document.addEventListener("DOMContentLoaded", () => {
-        const popup = document.querySelector('.pop');
-        const modalBox = popup.querySelector('div');
-        popup.addEventListener('click', (e) => {
-          if (!modalBox.contains(e.target)) hidePopUp();
-        });
-
-        
-      });
-
-
-
-
+    popup.addEventListener('click', function (e) {
+      // Only hide if the user clicked outside the modal box
+      if (!modalBox.contains(e.target)) {
+        hidePopUp();
+      }
+    });
+  });
     </script>
   </body>
 </html>
