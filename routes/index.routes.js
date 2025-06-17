@@ -3,7 +3,9 @@ const authMiddleware = require('../middlewares/authe');
 const router = express.Router();
 const upload = require('../config/multer.config');
 const fileModel = require('../models/files.models');
-const cloudinary = require('../config/cloudinary.config'); // Fix double slash
+const cloudinary = require('../config/cloudinary.config');
+const fs = require('fs'); // At the top
+
 
 // Landing page
 router.get('/', async (req, res) => {
@@ -27,29 +29,38 @@ router.get('/home', authMiddleware, async (req, res) => {
 // File upload route
 router.post('/upload', authMiddleware, upload.single('file'), async (req, res) => {
   try {
-    if (!req.file) {
-      throw new Error("No file received. Multer or Cloudinary failed.");
-    }
+    console.log("🔥 Upload route triggered");
+    if (!req.file) throw new Error("❌ No file received");
 
-    console.log("Request File:", JSON.stringify(req.file, null, 2));
-    console.log("Request User:", JSON.stringify(req.user, null, 2));
+    // Upload to Cloudinary using the local path
+    const cloudResult = await cloudinary.uploader.upload(req.file.path, {
+      folder: 'DriveAppFiles', // Optional: categorizes uploads in Cloudinary
+      use_filename: true,
+    });
 
-    const secureUrl = req.file.path || req.file.secure_url || req.file.url;
-    if (!secureUrl) {
-      throw new Error("Cloudinary upload failed: secureUrl is undefined");
-    }
+    console.log("☁️ Cloudinary Upload Success:", cloudResult.secure_url);
 
-    await fileModel.create({
-      path: secureUrl,
+    // Save to DB
+    const savedFile = await fileModel.create({
+      path: cloudResult.secure_url,
       originalname: req.file.originalname?.toString(),
       user: req.user.userId,
     });
 
+    console.log("✅ Saved to DB:", savedFile);
+
+    // Delete the temp file from server (clean-up)
+    fs.unlink(req.file.path, err => {
+      if (err) console.error("Temp file delete failed:", err.message);
+    });
+
     res.redirect('/home');
   } catch (err) {
-    console.error('Upload Error Stack:', err.stack)
+    console.error("❌ Upload error:", JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
+    res.status(500).json({ error: "Upload Failed", message: err.message });
   }
 });
+
 
 // Download file route
 router.get('/download/:id', authMiddleware, async (req, res) => {
