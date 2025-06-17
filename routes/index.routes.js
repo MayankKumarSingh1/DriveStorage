@@ -4,7 +4,7 @@ const router = express.Router();
 const upload = require('../config/multer.config');
 const fileModel = require('../models/files.models');
 const cloudinary = require('../config/cloudinary.config');
-
+const streamifier = require('streamifier')
 // Show start page
 router.get('/', (req, res) => {
   res.render('start');
@@ -31,11 +31,25 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
       throw new Error("No file received");
     }
 
-    // Upload to Cloudinary
-    const cloudinaryResponse = await cloudinary.uploader.upload(req.file.path, {
-      folder: 'DriveAppFiles',
-      use_filename: true,
-    });
+    // Cloudinary upload using buffer
+    const streamUpload = (req) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: 'DriveAppFiles',
+            use_filename: true,
+            filename_override: req.file.originalname,
+          },
+          (error, result) => {
+            if (result) resolve(result);
+            else reject(error);
+          }
+        );
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+      });
+    };
+
+    const cloudinaryResponse = await streamUpload(req);
 
     console.log("☁️ Cloudinary Upload Response:", cloudinaryResponse);
 
@@ -46,7 +60,6 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
       throw new Error("Cloudinary upload did not return a secure_url");
     }
 
-    // Save to MongoDB
     const savedFile = await fileModel.create({
       path: fileUrl,
       originalname: req.file.originalname,
@@ -55,25 +68,21 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
     });
 
     console.log("✅ File saved to DB:", savedFile);
-
     res.redirect('/home');
 
   } catch (err) {
-    const detailedError = {
+    console.error("❌ Upload error:", {
       message: err.message,
       stack: err.stack,
       name: err.name,
-    };
-
-    console.error("❌ Upload error:", detailedError);
+    });
 
     res.status(500).json({
       error: "Upload Failed",
-      details: detailedError
+      details: err.message,
     });
   }
 });
-
 // Download
 router.get('/download/:id', authMiddleware, async (req, res) => {
   try {
