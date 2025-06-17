@@ -53,14 +53,22 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
     });
 
     res.redirect('/home');
-  } catch (err) {
-    console.error("❌ Upload error:", JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
-    res.status(500).json({
-      error: "Upload Failed",
-      message: err.message,
-      stack: err.stack
-    });
-  }
+  }catch (err) {
+  const errorInfo = {
+    message: err.message,
+    stack: err.stack,
+    name: err.name,
+    full: JSON.stringify(err, Object.getOwnPropertyNames(err))
+  };
+
+  console.error("❌ Upload error:", errorInfo);
+
+  res.status(500).json({
+    error: "Upload Failed",
+    details: errorInfo
+  });
+}
+
 });
 
 
