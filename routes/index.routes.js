@@ -29,47 +29,63 @@ router.get('/home', authMiddleware, async (req, res) => {
 // File upload route
 router.post('/upload', authMiddleware, upload.single('file'), async (req, res) => {
   try {
-    console.log("4  Upload route triggered");
-    if (!req.file) throw new Error("5 No file received");
+    console.log("📥 Upload route triggered");
 
-    const cloudResult = await cloudinary.uploader.upload(req.file.path, {
+    if (!req.file) {
+      throw new Error("No file received");
+    }
+
+    // Upload to Cloudinary
+    const cloudinaryResponse = await cloudinary.uploader.upload(req.file.path, {
       folder: 'DriveAppFiles',
       use_filename: true,
     });
 
-    console.log("6 Cloudinary Upload Success:", cloudResult.secure_url);
+    console.log("☁️ Cloudinary Upload Response:", cloudinaryResponse);
 
+    // Get secure_url safely from response
+    const fileUrl = cloudinaryResponse.secure_url;
+    const publicId = cloudinaryResponse.public_id;
+
+    if (!fileUrl) {
+      throw new Error("Cloudinary upload did not return a secure_url");
+    }
+
+    // Save to MongoDB
     const savedFile = await fileModel.create({
-      path: cloudResult.secure_url,
-      originalname: req.file.originalname?.toString(),
-      public_id: cloudResult.public_id, // optional
-      user: req.user.userId,
+      path: fileUrl,
+      originalname: req.file.originalname,
+      public_id: publicId, // Optional but useful for deletion
+      user: req.user.userId
     });
 
-    console.log("7 Saved to DB:", savedFile);
+    console.log("✅ File saved to DB:", savedFile);
 
-    fs.unlink(req.file.path, err => {
-      if (err) console.error("8 Temp file delete failed:", err.message);
+    // Clean up the uploaded local file
+    fs.unlink(req.file.path, (err) => {
+      if (err) {
+        console.error("⚠️ Failed to delete local temp file:", err.message);
+      }
     });
 
     res.redirect('/home');
-  }catch (err) {
-  const errorInfo = {
-    message: err.message,
-    stack: err.stack,
-    name: err.name,
-    full: JSON.stringify(err, Object.getOwnPropertyNames(err))
-  };
 
-  console.error("9  Upload error:", errorInfo);
+  } catch (err) {
+    const detailedError = {
+      message: err.message,
+      stack: err.stack,
+      name: err.name,
+    };
 
-  res.status(500).json({
-    error: "10 Upload Failed",
-    details: errorInfo
-  });
-}
+    console.error("❌ Upload error:", detailedError);
 
+    res.status(500).json({
+      error: "Upload Failed",
+      details: detailedError
+    });
+  }
 });
+
 
 
 
