@@ -1,120 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-  <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
-  <title>Upload Portal</title>
-  <style>
-    .fade-in {
-      animation: fadeIn 0.3s ease-in-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-  </style>
-</head>
-<body class="min-h-screen bg-gradient-to-tr from-indigo-950 via-purple-900 to-blue-950 text-white font-sans transition-all duration-300">
-  <main class="min-h-screen flex flex-col items-center gap-10 py-10 px-4">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <title>Upload Portal</title>
+    <style>
+      .fade-in {
+        animation: fadeIn 0.3s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+      }
+    </style>
+  </head>
 
-    <h1 class="text-3xl md:text-4xl font-bold text-center bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">File Upload Dashboard</h1>
+  <body class="min-h-screen bg-radial-[ellipse_at_top_left] from-indigo-950 via-purple-900 to-blue-950 text-white font-sans transition-all duration-300">
 
-    <button onclick="showPopUp()" class="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-full shadow-lg hover:scale-105 transition duration-300">
-      <i class="ri-upload-cloud-line text-lg"></i> Upload New File
-    </button>
+    <main class="min-h-screen flex flex-col items-center gap-10 py-10 px-4">
 
-    <!-- Upload Modal -->
-    <div class="pop hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div class="relative bg-white/80 dark:bg-gray-900/90 backdrop-blur-lg border border-gray-200 dark:border-gray-700 w-full max-w-md p-6 rounded-xl shadow-2xl fade-in">
-        <button onclick="hidePopUp()" class="absolute top-3 right-4 text-gray-500 hover:text-red-500 text-xl transition">
-          <i class="ri-close-fill"></i>
-        </button>
-        <h3 class="text-xl font-semibold text-center mb-4 text-gray-900 dark:text-white">Upload File</h3>
+      <!-- Title -->
+      <h1 class="text-3xl md:text-4xl font-bold text-center bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
+        File Upload Dashboard
+      </h1>
 
-        <form action="/upload" method="post" enctype="multipart/form-data" class="space-y-5">
-          <div class="w-full h-48 rounded-lg border-2 border-dashed border-purple-300 dark:border-gray-600 bg-purple-50 dark:bg-gray-800 flex flex-col items-center justify-center text-center hover:bg-purple-100 dark:hover:bg-gray-700">
-            <svg class="w-10 h-10 mb-2 text-purple-400 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            <p class="text-sm text-gray-600 dark:text-gray-300">Drag & drop or click below</p>
-            <p class="text-xs mb-2 text-gray-400">PNG, JPG, GIF, SVG | Max 800x400px</p>
-            <button type="button" onclick="document.getElementById('dropzone-file').click()" class="text-sm px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white rounded-full transition">
-              Browse
-            </button>
-            <input id="dropzone-file" name="file" type="file" class="hidden" required />
-          </div>
-          <div class="text-center">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-5 py-2 rounded-full shadow transition">
-              Upload
-            </button>
-          </div>
-        </form>
+      <!-- Upload Trigger Button -->
+      <button onclick="showPopUp()" class="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-full shadow-lg hover:scale-105 transition duration-300">
+        <i class="ri-upload-cloud-line text-lg"></i> Upload New File
+      </button>
+
+      <!-- Upload Modal -->
+      <div class="pop hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="relative bg-white/80 dark:bg-gray-900/90 backdrop-blur-lg border border-gray-200 dark:border-gray-700 w-full max-w-md p-6 rounded-xl shadow-2xl fade-in">
+
+          <!-- Close Button -->
+          <button onclick="hidePopUp()" class="absolute top-3 right-4 text-gray-500 hover:text-red-500 text-xl transition">
+            <i class="ri-close-fill"></i>
+          </button>
+
+          <h3 class="text-xl font-semibold text-center mb-4 text-gray-900 dark:text-white">Upload File</h3>
+
+          
+
+          <!-- Upload Form -->
+          <form action="/upload" method="post" enctype="multipart/form-data" class="space-y-5">
+            <div class="w-full h-48 rounded-lg border-2 border-dashed border-purple-300 dark:border-gray-600 bg-purple-50 dark:bg-gray-800 flex flex-col items-center justify-center text-center transition hover:bg-purple-100 dark:hover:bg-gray-700">
+              <svg class="w-10 h-10 mb-2 text-purple-400 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              <p class="text-sm text-gray-600 dark:text-gray-300">Drag & drop or click below</p>
+              <p class="text-xs mb-2 text-gray-400">PNG, JPG, GIF, SVG | Max 800x400px</p>
+              <button type="button" onclick="document.getElementById('dropzone-file').click()" class="text-sm px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white rounded-full transition">
+                Browse
+              </button>
+              <input id="dropzone-file" name="file" type="file" class="hidden" required />
+            </div>
+
+            <div class="text-center">
+              <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-5 py-2 rounded-full shadow transition">
+                Upload
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
 
-    <!-- File Cards -->
-    <section class="w-full max-w-5xl">
-      <h2 class="text-2xl font-semibold text-center text-gray-200 mb-6">Your Files</h2>
+      <!-- File Cards -->
+      <section class="w-full max-w-5xl">
+        <h2 class="text-2xl font-semibold text-center text-gray-700 dark:text-white mb-6">Your Files</h2>
 
-      <% if (files && files.length > 0) { %>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          <% files.forEach(file => { %>
+          <% files.forEach((file) => { %>
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md hover:scale-[1.01] transition p-4 flex justify-between items-center border border-gray-200 dark:border-gray-700">
               <div class="truncate font-medium text-sm text-gray-700 dark:text-white w-4/5">
                 <%= file.originalname %>
               </div>
-              <div class="flex gap-3 items-center">
-                <a href="/download/<%= file._id %>" class="text-blue-500 hover:text-blue-700 text-xl transition" title="Download">
-                  <i class="ri-download-2-line"></i>
-                </a>
-                <button onclick="deleteFile('<%= file._id %>')" class="text-red-500 hover:text-red-700 text-xl transition" title="Delete">
-                  <i class="ri-delete-bin-line"></i>
-                </button>
-              </div>
+              <a href="/download/<%= file._id %>" class="text-blue-500 dark:text-blue-300 hover:text-blue-700 text-xl transition">
+                <i class="ri-download-2-line"></i>
+              </a>
             </div>
-          <% }); %>
+          <% }) %>
         </div>
-      <% } else { %>
-        <p class="text-center text-gray-400 mt-4">No files uploaded yet.</p>
-      <% } %>
-    </section>
-  </main>
+      </section>
+    </main>
 
-  <script>
-    function showPopUp() {
-      document.querySelector('.pop').style.display = 'flex';
-    }
-
-    function hidePopUp() {
-      document.querySelector('.pop').style.display = 'none';
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const popup = document.querySelector('.pop');
-      const modalBox = popup.querySelector('div');
-      popup.addEventListener('click', (e) => {
-        if (!modalBox.contains(e.target)) hidePopUp();
-      });
-    });
-
-    async function deleteFile(fileId) {
-      if (confirm("Are you sure you want to delete this file?")) {
-        try {
-          const res = await fetch(`/delete/${fileId}`, { method: 'DELETE' });
-          if (res.ok) {
-            location.reload();
-          } else {
-            alert("Failed to delete file.");
-          }
-        } catch (err) {
-          console.error(err);
-          alert("Error deleting file.");
-        }
+    <script>
+      function showPopUp() {
+        document.querySelector('.pop').style.display = 'flex';
       }
-    }
-  </script>
-</body>
+
+      function hidePopUp() {
+        document.querySelector('.pop').style.display = 'none';
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const popup = document.querySelector('.pop');
+        const modalBox = popup.querySelector('div');
+        popup.addEventListener('click', (e) => {
+          if (!modalBox.contains(e.target)) hidePopUp();
+        });
+
+        
+      });
+
+
+
+
+    </script>
+  </body>
 </html>
