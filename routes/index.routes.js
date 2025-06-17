@@ -31,30 +31,10 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
   try {
     if (!req.file) throw new Error("No file uploaded");
 
-    const timestamp = Math.floor(Date.now() / 1000);
-    const paramsToSign = {
-      folder: 'DriveAppFiles',
-      timestamp,
-    };
-
-    const signature = generateSignature(paramsToSign, process.env.CLOUDINARY_API_SECRET);
-
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        {
-          folder: 'DriveAppFiles',
-          timestamp,
-          api_key: process.env.CLOUDINARY_API_KEY,
-          signature
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-
-      streamifier.createReadStream(req.file.buffer).pipe(stream);
+    const result = await cloudinary.uploader.upload(req.file.path, {
+    upload_preset: 'drive_app_preset'
     });
+
 
     await fileModel.create({
       path: result.secure_url,
