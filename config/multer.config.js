@@ -9,6 +9,7 @@ const storage = new CloudinaryStorage({
         resource_type: 'auto',
     }
 });
+console.log("multer")
 
 const upload = multer({ storage });
 
