@@ -4,7 +4,6 @@ const router = express.Router();
 const upload = require('../config/multer.config');
 const fileModel = require('../models/files.models');
 const cloudinary = require('../config/cloudinary.config');
-const fs = require('fs');
 
 // Show start page
 router.get('/', (req, res) => {
@@ -23,27 +22,55 @@ router.get('/home', authMiddleware, async (req, res) => {
 });
 
 // Upload file
+// File upload route
 router.post('/upload', authMiddleware, upload.single('file'), async (req, res) => {
   try {
-    if (!req.file) throw new Error("No file received");
+    console.log("📥 Upload route triggered");
 
-    const result = await cloudinary.uploader.upload(req.file.path, {
+    if (!req.file) {
+      throw new Error("No file received");
+    }
+
+    // Upload to Cloudinary
+    const cloudinaryResponse = await cloudinary.uploader.upload(req.file.path, {
       folder: 'DriveAppFiles',
-      use_filename: true
+      use_filename: true,
     });
 
-    await fileModel.create({
-      path: result.secure_url,
+    console.log("☁️ Cloudinary Upload Response:", cloudinaryResponse);
+
+    const fileUrl = cloudinaryResponse.secure_url;
+    const publicId = cloudinaryResponse.public_id;
+
+    if (!fileUrl) {
+      throw new Error("Cloudinary upload did not return a secure_url");
+    }
+
+    // Save to MongoDB
+    const savedFile = await fileModel.create({
+      path: fileUrl,
       originalname: req.file.originalname,
-      public_id: result.public_id,
+      public_id: publicId,
       user: req.user.userId
     });
 
-    fs.unlinkSync(req.file.path);
+    console.log("✅ File saved to DB:", savedFile);
+
     res.redirect('/home');
+
   } catch (err) {
-    console.error("Upload Error:", err);
-    res.status(500).send("Upload Failed");
+    const detailedError = {
+      message: err.message,
+      stack: err.stack,
+      name: err.name,
+    };
+
+    console.error("❌ Upload error:", detailedError);
+
+    res.status(500).json({
+      error: "Upload Failed",
+      details: detailedError
+    });
   }
 });
 
