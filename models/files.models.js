@@ -12,11 +12,11 @@ const fileSchema = new mongoose.Schema({
     },
     user:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'user',
+        ref:'User',
         required:[true, 'User is required']
     }
 })
 
-const file = mongoose.model('file', fileSchema)
+const File = mongoose.model('File', fileSchema)
 
-module.exports = file
+module.exports = File
