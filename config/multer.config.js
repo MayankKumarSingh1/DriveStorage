@@ -1,6 +1,13 @@
 const multer = require('multer');
+const path = require('path');
 
-const storage = multer.memoryStorage(); 
-const upload = multer({ storage });
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, '/tmp'); // ✅ Railway-safe temp folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
 
-module.exports = upload;
+module.exports = multer({ storage: storage });
