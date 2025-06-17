@@ -32,24 +32,22 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
     console.log("🔥 Upload route triggered");
     if (!req.file) throw new Error("❌ No file received");
 
-    // Upload to Cloudinary using the local path
     const cloudResult = await cloudinary.uploader.upload(req.file.path, {
-      folder: 'DriveAppFiles', // Optional: categorizes uploads in Cloudinary
+      folder: 'DriveAppFiles',
       use_filename: true,
     });
 
     console.log("☁️ Cloudinary Upload Success:", cloudResult.secure_url);
 
-    // Save to DB
     const savedFile = await fileModel.create({
       path: cloudResult.secure_url,
       originalname: req.file.originalname?.toString(),
+      public_id: cloudResult.public_id, // optional
       user: req.user.userId,
     });
 
     console.log("✅ Saved to DB:", savedFile);
 
-    // Delete the temp file from server (clean-up)
     fs.unlink(req.file.path, err => {
       if (err) console.error("Temp file delete failed:", err.message);
     });
@@ -57,9 +55,14 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
     res.redirect('/home');
   } catch (err) {
     console.error("❌ Upload error:", JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
-    res.status(500).json({ error: "Upload Failed", message: err.message });
+    res.status(500).json({
+      error: "Upload Failed",
+      message: err.message,
+      stack: err.stack
+    });
   }
 });
+
 
 
 // Download file route
@@ -67,8 +70,8 @@ router.get('/download/:id', authMiddleware, async (req, res) => {
   try {
     const file = await fileModel.findById(req.params.id);
     if (!file) {
-      return res.status(404)
-    }
+        return res.status(404).json({ message: "File not found" });
+}
 
     const downloadUrl = file.path.replace('/upload/', '/upload/fl_attachment:');
     res.redirect(downloadUrl);
