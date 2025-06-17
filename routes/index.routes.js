@@ -16,12 +16,12 @@ router.get('/', async (req, res) => {
 router.get('/home', authMiddleware, async (req, res) => {
   try {
     const userFiles = await fileModel.find({ user: req.user.userId });
-    console.log("User Files:", JSON.stringify(userFiles, null, 2));
+    console.log(" 1 User Files:", JSON.stringify(userFiles, null, 2));
     res.render('home', { files: userFiles });
   } catch (err) {
-    console.error("Error fetching user files:", err.message);
+    console.error(" 2 Error fetching user files:", err.message);
     // Send JSON instead
-    res.status(500).json({ error: 'Upload Failed', message: err.message });
+    res.status(500).json({ error: ' 3 Upload Failed', message: err.message });
 
   }
 });
@@ -29,15 +29,15 @@ router.get('/home', authMiddleware, async (req, res) => {
 // File upload route
 router.post('/upload', authMiddleware, upload.single('file'), async (req, res) => {
   try {
-    console.log("🔥 Upload route triggered");
-    if (!req.file) throw new Error("❌ No file received");
+    console.log("4  Upload route triggered");
+    if (!req.file) throw new Error("5 No file received");
 
     const cloudResult = await cloudinary.uploader.upload(req.file.path, {
       folder: 'DriveAppFiles',
       use_filename: true,
     });
 
-    console.log("☁️ Cloudinary Upload Success:", cloudResult.secure_url);
+    console.log("6 Cloudinary Upload Success:", cloudResult.secure_url);
 
     const savedFile = await fileModel.create({
       path: cloudResult.secure_url,
@@ -46,10 +46,10 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
       user: req.user.userId,
     });
 
-    console.log("✅ Saved to DB:", savedFile);
+    console.log("7 Saved to DB:", savedFile);
 
     fs.unlink(req.file.path, err => {
-      if (err) console.error("Temp file delete failed:", err.message);
+      if (err) console.error("8 Temp file delete failed:", err.message);
     });
 
     res.redirect('/home');
@@ -61,10 +61,10 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
     full: JSON.stringify(err, Object.getOwnPropertyNames(err))
   };
 
-  console.error("❌ Upload error:", errorInfo);
+  console.error("9  Upload error:", errorInfo);
 
   res.status(500).json({
-    error: "Upload Failed",
+    error: "10 Upload Failed",
     details: errorInfo
   });
 }
