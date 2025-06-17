@@ -5,7 +5,22 @@ const upload = require('../config/multer.config');
 const fileModel = require('../models/files.models');
 const cloudinary = require('../config/cloudinary.config');
 const streamifier = require('streamifier')
-// Show start page
+const crypto = require('crypto');
+
+const generateSignature = (params, apiSecret) => {
+  const sortedParams = Object.keys(params)
+    .sort()
+    .map(key => `${key}=${params[key]}`)
+    .join('&');
+
+  const signature = crypto
+    .createHash('sha1')
+    .update(sortedParams + apiSecret)
+    .digest('hex');
+
+  return signature;
+};
+
 router.get('/', (req, res) => {
   res.render('start');
 });
@@ -21,53 +36,45 @@ router.get('/home', authMiddleware, async (req, res) => {
   }
 });
 
-// Upload file
-// File upload route
 router.post('/upload', authMiddleware, upload.single('file'), async (req, res) => {
   try {
-    console.log("📥 Upload route triggered");
+    if (!req.file) throw new Error("No file received");
 
-    if (!req.file) {
-      throw new Error("No file received");
-    }
+    const timestamp = Math.floor(Date.now() / 1000);
 
-    // Cloudinary upload using buffer
-    const streamUpload = (req) => {
+    const uploadOptions = {
+      folder: 'DriveAppFiles',
+      timestamp,
+    };
+
+    const signature = generateSignature(uploadOptions, process.env.CLOUDINARY_API_SECRET);
+
+    const cloudinaryStreamUpload = () => {
       return new Promise((resolve, reject) => {
-
-        const stream = cloudinary.uploader.upload_stream(
+        cloudinary.uploader.upload_stream(
           {
-            folder: 'DriveAppFiles',
-            filename_override: req.file.originalname,
+            folder: uploadOptions.folder,
+            timestamp: uploadOptions.timestamp,
+            api_key: process.env.CLOUDINARY_API_KEY,
+            signature,
           },
           (error, result) => {
             if (result) resolve(result);
             else reject(error);
           }
-        );
-        streamifier.createReadStream(req.file.buffer).pipe(stream);
+        ).end(req.file.buffer);
       });
     };
 
-    const cloudinaryResponse = await streamUpload(req);
-
-    console.log("☁️ Cloudinary Upload Response:", cloudinaryResponse);
-
-    const fileUrl = cloudinaryResponse.secure_url;
-    const publicId = cloudinaryResponse.public_id;
-
-    if (!fileUrl) {
-      throw new Error("Cloudinary upload did not return a secure_url");
-    }
+    const uploadResponse = await cloudinaryStreamUpload();
 
     const savedFile = await fileModel.create({
-      path: fileUrl,
+      path: uploadResponse.secure_url,
       originalname: req.file.originalname,
-      public_id: publicId,
+      public_id: uploadResponse.public_id,
       user: req.user.userId
     });
 
-    console.log("✅ File saved to DB:", savedFile);
     res.redirect('/home');
 
   } catch (err) {
@@ -79,7 +86,7 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
 
     res.status(500).json({
       error: "Upload Failed",
-      details: err.message,
+      details: err.message
     });
   }
 });
