@@ -114,6 +114,7 @@ router.post(
         },
         process.env.JWT_SECRET
       );
+      console.log("jwt", JWT_SECRET)
 
       res.cookie('token', token);
       res.redirect('/home');
