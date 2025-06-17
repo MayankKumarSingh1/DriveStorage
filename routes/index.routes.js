@@ -47,8 +47,7 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
 
     res.redirect('/home');
   } catch (err) {
-    console.error('Upload Error Stack:', err.stack);
-    res.status(500).render('error', { message: err.message });
+    console.error('Upload Error Stack:', err.stack)
   }
 });
 
@@ -57,14 +56,13 @@ router.get('/download/:id', authMiddleware, async (req, res) => {
   try {
     const file = await fileModel.findById(req.params.id);
     if (!file) {
-      return res.status(404).render('error', { message: "File not found" });
+      return res.status(404)
     }
 
     const downloadUrl = file.path.replace('/upload/', '/upload/fl_attachment:');
     res.redirect(downloadUrl);
   } catch (err) {
     console.error("Download Error:", err.message);
-    res.status(500).render('error', { message: "Download failed." });
   }
 });
 
