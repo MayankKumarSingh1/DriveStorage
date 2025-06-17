@@ -16,7 +16,8 @@ router.get('/home',authMiddleware,async (req,res)=>{
         user:req.user.userId
     })
 
-    console.log(userFiles)
+    console.log("User Files:", JSON.stringify(userFiles, null, 2));
+
 
     res.render('home',{
         files:userFiles
@@ -29,7 +30,9 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
       throw new Error("No file received. Multer or Cloudinary failed.");
     }
 
-    console.log('Uploaded File:', JSON.stringify(req.file, null, 2));
+   console.log("Request File:", JSON.stringify(req.file, null, 2));
+console.log("Request User:", JSON.stringify(req.user, null, 2));
+
 
     const secureUrl = req.file.path || req.file.secure_url || req.file.url;
 
