@@ -16,7 +16,6 @@ router.get('/', (req, res) => {
   res.render('start');
 });
 
-// Show files on home page
 router.get('/home', authMiddleware, async (req, res) => {
   try {
     const userFiles = await fileModel.find({ user: req.user.userId });
@@ -46,11 +45,11 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
     res.redirect('/home');
 
   } catch (err) {
-    console.error("❌ Upload error:", err);
+    console.error(" Upload error:", err);
     res.status(500).json({ error: "Upload Failed", details: err.message });
   }
 });
-// Download
+
 router.get('/download/:id', authMiddleware, async (req, res) => {
   try {
     const file = await fileModel.findById(req.params.id);
@@ -64,7 +63,6 @@ router.get('/download/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// Delete
 router.delete('/delete/:id', authMiddleware, async (req, res) => {
   try {
     const file = await fileModel.findByIdAndDelete(req.params.id);

@@ -6,12 +6,10 @@ const userModel = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-// Show register page
 router.get('/register', (req, res) => {
   res.render('register');
 });
 
-// Register handler
 router.post(
   '/register',
   body('email').trim().isEmail().isLength({ min: 13 }),
@@ -43,7 +41,7 @@ router.post(
         password: hashPassword,
       });
         if (!process.env.JWT_SECRET){
-        console.error('❌ JWT_SECRET not defined');
+        console.error('JWT_SECRET not defined');
         return res.status(500).render('register', {
             error: 'Internal error. JWT secret not set.',
         });
@@ -68,12 +66,10 @@ router.post(
   }
 );
 
-// Show login page
 router.get('/login', (req, res) => {
   res.render('login');
 });
 
-// Login handler
 router.post(
   '/login',
   body('username').trim().isLength({ min: 3 }),
